@@ -1,3 +1,5 @@
+<img src="Images/image1.png" width="250"/> <img src="Images/image2.png" width="250"/> <img src="Images/image3.png" width="250"/> 
+
 ### Description
 
 Plagiarism in a code is extremely common these days. Under the guise of shared resources, students justify to themselves and the authorities for copying other people’s work. Plagiarism in texts, papers and written works are relatively easier to detect as they’re strings, and since the problem has been around for a while there are many solutions to this problem. The problem becomes harder for codes. It is not only due to the large and sudden influx of codes in the past two decades but also changing few parameters in a code could make same codes look drastically different.

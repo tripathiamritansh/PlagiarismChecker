@@ -33,7 +33,7 @@ system detected plagiarism.
 
 ### Tools and Technologies used:
 
-Programming language: Java
+* Programming language: Java
 * Backend Framework: Spring Boot and JPA
 * Frontend Frameworks: AngularJS, Bootstrap and HTML
 * Testing Framework: Junit4

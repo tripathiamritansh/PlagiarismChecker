@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WeightedDistribution.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">WeightedDistribution.java</span></div><h1>WeightedDistribution.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+/**
+ * Weighted Distribution class takes all current algorithms and creates
+ * a new weighted score based on their assigned weights
+ */
+<span class="fc" id="L9">public class WeightedDistribution implements FileComparer {</span>
+
+<span class="fc" id="L11">    private LCSComparer lcsComparer = new LCSComparer();</span>
+<span class="fc" id="L12">    private JaccardComparer jaccardComparer = new JaccardComparer();</span>
+<span class="fc" id="L13">    private TokenEditDistComparer tokenEditDistComparer = new TokenEditDistComparer();</span>
+<span class="fc" id="L14">    private LCSComparerAdvanced lcsComparerAdvanced = new LCSComparerAdvanced();</span>
+
+    /**
+     * Method to compare two python files
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a similarity score
+     */
+    @Override
+    public double compareTwoFiles(PythonFile f1, PythonFile f2) {
+
+<span class="fc" id="L25">        double lcsResult = lcsComparer.compareTwoFiles(f1,f2);</span>
+<span class="fc" id="L26">        double jaccardResult = jaccardComparer.compareTwoFiles(f1,f2);</span>
+<span class="nc" id="L27">        double tokenEDCResult = tokenEditDistComparer.compareTwoFiles(f1,f2);</span>
+<span class="nc" id="L28">        double lcsAdvResult = lcsComparerAdvanced.compareTwoFiles(f1,f2);</span>
+
+<span class="nc" id="L30">        int totalWeight = ComparisonAlgorithm.LCS.getWeight()+</span>
+<span class="nc" id="L31">                ComparisonAlgorithm.EDITDISTANCE.getWeight() +</span>
+<span class="nc" id="L32">                ComparisonAlgorithm.LCS_WITH_AST.getWeight() +</span>
+<span class="nc" id="L33">                ComparisonAlgorithm.JACCARD.getWeight();</span>
+
+<span class="nc" id="L35">        return  (ComparisonAlgorithm.LCS.getWeight() * lcsResult +</span>
+<span class="nc" id="L36">                ComparisonAlgorithm.EDITDISTANCE.getWeight() * jaccardResult +</span>
+<span class="nc" id="L37">                ComparisonAlgorithm.LCS_WITH_AST.getWeight() * tokenEDCResult +</span>
+<span class="nc" id="L38">                ComparisonAlgorithm.JACCARD.getWeight() * lcsAdvResult) / totalWeight;</span>
+    }
+
+    /**
+     * Method to compare two python files and generate Line By Line
+     * Comparision
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a Comparision Report containing line by line comparision
+     */
+    @Override
+    public ComparisionReport compareTwoFilesAdvanced(PythonFile f1, PythonFile f2) {
+<span class="nc" id="L50">        ComparisionReport cr = new ComparisionReport();</span>
+<span class="nc" id="L51">        cr.setSimilarity(compareTwoFiles(f1,f2));</span>
+<span class="nc" id="L52">        cr.setFile1(f1);</span>
+<span class="nc" id="L53">        cr.setFile2(f2);</span>
+<span class="nc" id="L54">        return cr;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

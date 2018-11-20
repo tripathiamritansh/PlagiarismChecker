@@ -1,0 +1,13 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.comparisonstrategies.MossComparerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 5.108 sec <<< FAILURE! - in edu.northeastern.CS5500.team111.comparisonstrategies.MossComparerTest
+testMossTrainData(edu.northeastern.CS5500.team111.comparisonstrategies.MossComparerTest)  Time elapsed: 5.105 sec  <<< ERROR!
+java.lang.NumberFormatException: null
+	at java.lang.Integer.parseInt(Integer.java:542)
+	at java.lang.Integer.parseInt(Integer.java:615)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadInt(AlgoProperties.java:39)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MossComparer.scrapeMoss(MossComparer.java:92)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MossComparer.compare(MossComparer.java:66)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MossComparerTest.testMossTrainData(MossComparerTest.java:44)
+

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.PlagiarismDetector.domain.PythonFileTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.045 sec - in edu.northeastern.CS5500.team111.PlagiarismDetector.domain.PythonFileTest

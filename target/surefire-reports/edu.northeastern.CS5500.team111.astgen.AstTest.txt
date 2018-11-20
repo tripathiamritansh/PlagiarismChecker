@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.astgen.AstTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.517 sec - in edu.northeastern.CS5500.team111.astgen.AstTest

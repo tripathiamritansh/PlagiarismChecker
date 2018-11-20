@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GenerateReport.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">GenerateReport.java</span></div><h1>GenerateReport.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.Report;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Generate Report Class, containing comparision report which has
+ * line by line comparision report, and a Report which stores the final
+ * highlighted differences between two files
+ */
+
+public class GenerateReport {
+
+<span class="fc" id="L17">    private static final Integer BASE_CHAR = 47;</span>
+    private ComparisionReport comparisionReport;
+    private Report report;
+
+    /**
+     * Class constructor, initializing parameters
+     */
+<span class="fc" id="L24">    public GenerateReport(ComparisionReport comparisionReport) {</span>
+<span class="fc" id="L25">        this.comparisionReport = comparisionReport;</span>
+<span class="fc" id="L26">        this.report = new Report(comparisionReport.getFile1().getFilename(),</span>
+<span class="fc" id="L27">                comparisionReport.getFile2().getFilename(), comparisionReport.getSimilarity());</span>
+<span class="fc" id="L28">        createReport();</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * createReport class Takes content from comparision Report and generates a
+     * Final presentable report.
+     */
+    private void createReport() {
+<span class="fc" id="L36">        PythonFile file1 = comparisionReport.getFile1();</span>
+<span class="fc" id="L37">        PythonFile file2 = comparisionReport.getFile2();</span>
+
+<span class="fc" id="L39">        report.setFile1Content(refactorFileContent(file1, comparisionReport.getLinesMap1()));</span>
+<span class="fc" id="L40">        report.setFile2Content(refactorFileContent(file2, comparisionReport.getLinesMap2()));</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * refactorFileContent loops through a python file and with the help of
+     * ine indices passed in linesMap creates highlighted lines
+     *
+     * @param file     Python File for which highlights have to be generated
+     * @param linesMap Map for line and pair for indices (starting and ending)
+     *                 which are to be highlighted
+     * @return a String containing the highlighted content of Python file
+     */
+    private String refactorFileContent(PythonFile file, Map&lt;Integer, List&lt;Pair&gt;&gt; linesMap) {
+
+<span class="fc" id="L54">        String file1Content = new String(file.getFileContent());</span>
+
+        // Split based on next line
+<span class="fc" id="L57">        String[] contentInEachLine = file1Content.split(&quot;\n&quot;);</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (Integer lineNum : linesMap.keySet()) {</span>
+<span class="fc" id="L60">            List&lt;Pair&gt; charMatches = sort(linesMap.get(lineNum));</span>
+
+<span class="fc" id="L62">            Integer charCounter = 0;</span>
+            // Loop through line indices
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            for (Pair charMatch : charMatches) {</span>
+
+<span class="fc" id="L66">                String content = contentInEachLine[lineNum - 1];</span>
+
+<span class="fc" id="L68">                Integer startIndex = charMatch.getKey() + charCounter;</span>
+<span class="fc" id="L69">                Integer stopIndex = charMatch.getValue() + charCounter;</span>
+
+                // Highlight the dubious lines
+<span class="fc" id="L72">                String updatedString = content.substring(0, startIndex) +</span>
+<span class="fc" id="L73">                        &quot;&lt;span style=\&quot;background-color: #FFFF00\&quot;&gt;&quot; + content.substring(startIndex,</span>
+<span class="fc" id="L74">                        stopIndex) + &quot;&lt;/span&gt;&quot; + content.substring(stopIndex, content.length());</span>
+
+<span class="fc" id="L76">                charCounter += BASE_CHAR;</span>
+<span class="fc" id="L77">                contentInEachLine[lineNum - 1] = updatedString;</span>
+<span class="fc" id="L78">            }</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        return addAppropriateLineBreaks(contentInEachLine);</span>
+    }
+
+    /**
+     * Getter
+     *
+     * @return The Report after highlighting and completion
+     */
+    public Report getReport() {
+<span class="fc" id="L89">        return report;</span>
+    }
+
+    /**
+     * Give appropriate line breaks to be represented in HTML
+     *
+     * @param array String array that contains lines
+     * @return a single String after appending the array
+     */
+    private String addAppropriateLineBreaks(String[] array) {
+<span class="fc" id="L99">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (String anArray : array) {</span>
+<span class="fc" id="L101">            sb.append(anArray).append(&quot;&lt;br&gt;&quot;);</span>
+        }
+<span class="fc" id="L103">        return sb.toString();</span>
+    }
+
+
+    /**
+     * Sort a list of key pairs
+     *
+     * @param tempList List of pair containing lines
+     * @return The passed pair but ordered.
+     */
+    private List&lt;Pair&gt; sort(List&lt;Pair&gt; tempList) {
+
+<span class="fc" id="L115">        int n = tempList.size();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (int i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            for (int j = 0; j &lt; n - i - 1; j++)</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                if (tempList.get(j).getKey() &gt; tempList.get(j + 1).getKey()) {</span>
+                    // swap temp and arr[i]
+
+<span class="fc" id="L121">                    Pair temp = tempList.get(j);</span>
+<span class="fc" id="L122">                    tempList.set(j, tempList.get(j + 1));</span>
+<span class="fc" id="L123">                    tempList.set(j + 1, temp);</span>
+                }
+
+<span class="fc" id="L126">        return tempList;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,34 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.518 sec <<< FAILURE! - in edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest
+compareTwoSameFiles(edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest)  Time elapsed: 0.068 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.WeightedDistribution.compareTwoFiles(WeightedDistribution.java:27)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest.compareTwoSameFiles(WeightedDistributionTest.java:56)
+
+compareTwoSlightlyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest)  Time elapsed: 0.054 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.WeightedDistribution.compareTwoFiles(WeightedDistribution.java:27)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest.compareTwoSlightlyDifferentFiles(WeightedDistributionTest.java:45)
+
+compareTwoCompletelyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest)  Time elapsed: 0.388 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.WeightedDistribution.compareTwoFiles(WeightedDistribution.java:27)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.WeightedDistributionTest.compareTwoCompletelyDifferentFiles(WeightedDistributionTest.java:51)
+

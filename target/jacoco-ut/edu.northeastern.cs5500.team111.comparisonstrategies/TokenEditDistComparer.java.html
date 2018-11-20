@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TokenEditDistComparer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">TokenEditDistComparer.java</span></div><h1>TokenEditDistComparer.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.astgen.Ast;
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+import edu.northeastern.cs5500.team111.util.AlgoProperties;
+import org.antlr.v4.runtime.Token;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Implementation of FileComparer class to compute the similarity using Edit distance algorithm.
+ * The edit distance is calculated on each AST Node.
+ */
+<span class="fc" id="L17">public class TokenEditDistComparer implements FileComparer {</span>
+
+<span class="fc" id="L19">    private int nameTokenID = 36;</span>
+<span class="fc" id="L20">    private TokenEditDistUtils tokenEditDistUtils = new TokenEditDistUtils();</span>
+    private ComparisionReport cr;
+
+    /**
+     * Function to calculate two token maps for similarity excluding token of type Name
+     *
+     * @param tokenMap1 list of tokens for file one
+     * @param tokenMap2 list of tokens for file two
+     * @return the similarity score between both
+     */
+    private double calculateOtherTokenSimilarity(Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap1,
+                                                 Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap2) {
+<span class="fc" id="L32">        int otherTokenCount = 0;</span>
+<span class="fc" id="L33">        double otherTokenSimilarity = 0.0;</span>
+
+<span class="fc" id="L35">        Set&lt;Integer&gt; tokenSet1 = tokenMap1.keySet();</span>
+<span class="fc" id="L36">        Set&lt;Integer&gt; tokenSet2 = tokenMap2.keySet();</span>
+<span class="fc" id="L37">        tokenSet1.retainAll(tokenSet2);</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (int i : tokenSet1) {</span>
+            //Ignoring Name Token
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (i != nameTokenID) {</span>
+
+<span class="fc" id="L43">                double commonTokenCount = (Math.min(tokenMap1.get(i).size(),</span>
+<span class="fc" id="L44">                        tokenMap2.get(i).size()) * 2.0);</span>
+
+<span class="fc" id="L46">                double totalTokenCount = (tokenMap1.get(i).size() + tokenMap2.get(i).size());</span>
+
+<span class="fc" id="L48">                otherTokenSimilarity += (commonTokenCount / totalTokenCount);</span>
+<span class="fc" id="L49">                otherTokenCount += 1;</span>
+            }
+<span class="fc" id="L51">        }</span>
+
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (otherTokenCount == 0) {</span>
+<span class="nc" id="L54">            otherTokenSimilarity = 0;</span>
+        } else {
+<span class="fc" id="L56">            otherTokenSimilarity = otherTokenSimilarity / otherTokenCount;</span>
+        }
+
+<span class="fc" id="L59">        return otherTokenSimilarity;</span>
+    }
+
+    /**
+     * calculateNameTokenSimilarity uses fuzzy matching between two lists of strings
+     * and finds out the least number of edits required to among all the
+     * pairs of strings
+     * using Hungarian Algorithm and calculates a similarity score accordingly
+     *
+     * @param tokenMap1 List1 of strings
+     * @param tokenMap2 List2 of strings
+     * @return the similarity ratio
+     */
+    private double calculateNameTokenSimilarity(Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap1,
+                                               Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap2) {
+
+<span class="fc" id="L75">        ArrayList&lt;String&gt; tokenList1 = (ArrayList&lt;String&gt;) tokenEditDistUtils.removeTokenListDuplicates(tokenMap1.get(nameTokenID));</span>
+<span class="fc" id="L76">        ArrayList&lt;String&gt; tokenList2 = (ArrayList&lt;String&gt;) tokenEditDistUtils.removeTokenListDuplicates(tokenMap2.get(nameTokenID));</span>
+
+<span class="fc" id="L78">        double similarity = 0.0;</span>
+
+
+<span class="fc" id="L81">        double[][] editDistMatrix = new double[tokenList1.size()][tokenList2.size()];</span>
+
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        for (int i = 0; i &lt; tokenList1.size(); i++) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            for (int j = 0; j &lt; tokenList2.size(); j++) {</span>
+<span class="fc" id="L85">                editDistMatrix[i][j] = tokenEditDistUtils.editDistance(tokenList1.get(i),</span>
+<span class="fc" id="L86">                        tokenList2.get(j));</span>
+            }
+        }
+
+<span class="fc" id="L90">        HungarianAlgorithm hungarianAlgorithm = new HungarianAlgorithm(editDistMatrix);</span>
+<span class="fc" id="L91">        int[] optimal = hungarianAlgorithm.execute();</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for (int i = 0; i &lt; optimal.length; i++) {</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">            if (optimal[i] != -1) {</span>
+<span class="fc" id="L95">                double ed = editDistMatrix[i][optimal[i]];</span>
+<span class="fc" id="L96">                double maxLen = Math.max(tokenList1.get(i).length(),</span>
+<span class="fc" id="L97">                        tokenList2.get(optimal[i]).length());</span>
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">                if (ed &lt; 3) {</span>
+<span class="fc" id="L100">                    similarity += (maxLen - ed) / maxLen;</span>
+                }
+            }
+        }
+<span class="fc" id="L104">        similarity = similarity / Math.max(tokenList1.size(), tokenList2.size());</span>
+
+<span class="fc" id="L106">        return similarity;</span>
+    }
+
+
+    /**
+
+     * calculateNameTokenSimilarity uses fuzzy matching between two lists of strings
+     * and finds out the least number of edits required to among all the
+     * pairs of strings
+     * using Hungarian Algorithm and calculates a similarity score accordingly
+     *
+     * @param tokenMap1 List1 of strings
+     * @param tokenMap2 List2 of strings
+     */
+
+    private void calculateNameTokenSimilarityAdvanced(Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap1,
+                                                     Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap2) {
+
+<span class="fc" id="L124">        ArrayList&lt;String&gt; tokenList1 = (ArrayList&lt;String&gt;) tokenEditDistUtils.removeTokenListDuplicates(tokenMap1.get(nameTokenID));</span>
+<span class="fc" id="L125">        ArrayList&lt;String&gt; tokenList2 = (ArrayList&lt;String&gt;) tokenEditDistUtils.removeTokenListDuplicates(tokenMap2.get(nameTokenID));</span>
+<span class="fc" id="L126">        Map&lt;String, List&lt;LineMatch&gt;&gt; tokenLineMatch1 = tokenEditDistUtils.getHashCodeLineMatch(tokenMap1.get</span>
+<span class="fc" id="L127">                (nameTokenID));</span>
+<span class="fc" id="L128">        Map&lt;String, List&lt;LineMatch&gt;&gt; tokenLineMatch2 = tokenEditDistUtils.getHashCodeLineMatch(tokenMap2.get</span>
+<span class="fc" id="L129">                (nameTokenID));</span>
+
+<span class="fc" id="L131">        double similarity = 0.0;</span>
+
+
+<span class="fc" id="L134">        double[][] editDistMatrix = new double[tokenList1.size()][tokenList2.size()];</span>
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; tokenList1.size(); i++) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            for (int j = 0; j &lt; tokenList2.size(); j++) {</span>
+<span class="fc" id="L138">                editDistMatrix[i][j] = tokenEditDistUtils.editDistance(tokenList1.get(i),</span>
+<span class="fc" id="L139">                        tokenList2.get(j));</span>
+            }
+        }
+
+<span class="fc" id="L143">        HungarianAlgorithm hungarianAlgorithm = new HungarianAlgorithm(editDistMatrix);</span>
+<span class="fc" id="L144">        int[] optimal = hungarianAlgorithm.execute();</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for (int i = 0; i &lt; optimal.length; i++) {</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">            if (optimal[i] != -1) {</span>
+<span class="fc" id="L148">                double ed = editDistMatrix[i][optimal[i]];</span>
+<span class="fc" id="L149">                double maxLen = Math.max(tokenList1.get(i).length(),</span>
+<span class="fc" id="L150">                        tokenList2.get(optimal[i]).length());</span>
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                if (ed &lt; 3) {</span>
+<span class="fc" id="L153">                    similarity += (maxLen - ed) / maxLen;</span>
+<span class="fc" id="L154">                    cr.addToLinesMap1(tokenLineMatch1.get(tokenList1.get(i)));</span>
+<span class="fc" id="L155">                    cr.addToLinesMap2(tokenLineMatch2.get(tokenList2.get(optimal[i])));</span>
+                }
+            }
+        }
+<span class="fc" id="L159">        similarity = similarity / Math.max(tokenList1.size(), tokenList2.size());</span>
+
+<span class="nc" id="L161">        cr.similarity += AlgoProperties.loadFloat(&quot;HUN_CONSTANT&quot;) * similarity;</span>
+
+<span class="nc" id="L163">        cr.setSimilarity(cr.similarity*100);</span>
+<span class="nc" id="L164">    }</span>
+
+
+
+    /**
+     * Method to compare two python files
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a similarity score
+     */
+    @Override
+    public double compareTwoFiles(PythonFile f1, PythonFile f2) {
+<span class="fc" id="L176">        Ast ast1 = new Ast(f1);</span>
+<span class="fc" id="L177">        Ast ast2 = new Ast(f2);</span>
+
+<span class="fc" id="L179">        Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap1 = ast1.getTokenMap();</span>
+<span class="fc" id="L180">        Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap2 = ast2.getTokenMap();</span>
+
+<span class="fc" id="L182">        double otherTokenSimilarity = calculateOtherTokenSimilarity(tokenMap1, tokenMap2);</span>
+<span class="fc" id="L183">        double nameTokenSimilarity = calculateNameTokenSimilarity(tokenMap1, tokenMap2);</span>
+
+        //Heuristic similarity
+<span class="nc" id="L186">        return (AlgoProperties.loadFloat(&quot;TOKEN_OTHER_CONSTANT&quot;) * otherTokenSimilarity + AlgoProperties.loadFloat(&quot;TOKEN_NAME_CONSTANT&quot;) * nameTokenSimilarity) * 100;</span>
+    }
+
+    /**
+     * Method to compare and get a line by line report
+     *
+     * @param f1 first file to be compared of type pythonFile
+     * @param f2 second file to be compared of type pythonFile
+     * @return a Comparision report with detailed results
+     */
+    @Override
+    public ComparisionReport compareTwoFilesAdvanced(PythonFile f1, PythonFile f2) {
+<span class="fc" id="L198">        Ast ast1 = new Ast(f1);</span>
+<span class="fc" id="L199">        Ast ast2 = new Ast(f2);</span>
+
+<span class="fc" id="L201">        Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap1 = ast1.getTokenMap();</span>
+<span class="fc" id="L202">        Map&lt;Integer, ArrayList&lt;Token&gt;&gt; tokenMap2 = ast2.getTokenMap();</span>
+
+<span class="fc" id="L204">        cr = new ComparisionReport();</span>
+
+<span class="fc" id="L206">        cr.setFile1(f1);</span>
+<span class="fc" id="L207">        cr.setFile2(f2);</span>
+<span class="fc" id="L208">        cr.setSimilarity(0.2*calculateOtherTokenSimilarity(tokenMap1, tokenMap2));</span>
+<span class="nc" id="L209">        calculateNameTokenSimilarityAdvanced(tokenMap1, tokenMap2);</span>
+
+<span class="nc" id="L211">        return cr;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

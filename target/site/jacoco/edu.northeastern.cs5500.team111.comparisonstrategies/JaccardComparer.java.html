@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JaccardComparer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">JaccardComparer.java</span></div><h1>JaccardComparer.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.astgen.Ast;
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Implementation of FileComparer class to compute the similarity using jaccard algorithm.
+ */
+<span class="fc" id="L16">public class JaccardComparer implements FileComparer {</span>
+
+    /**
+     * Function to Calculate Jaccard score between two AST objects
+     * @param ast1 An ast object
+     * @param ast2 An ast object
+     * @return the percentage match between two AST's
+     */
+    private double jaccardScore(Ast ast1, Ast ast2) {
+<span class="fc" id="L25">        Set&lt;Integer&gt; setA = new HashSet&lt;&gt;(ast1.getHashcodesList());</span>
+<span class="fc" id="L26">        Set&lt;Integer&gt; setB = new HashSet&lt;&gt;(ast2.getHashcodesList());</span>
+
+<span class="fc" id="L28">        Set&lt;Integer&gt; intersection = setA.stream()</span>
+<span class="fc" id="L29">                .filter(setB::contains)</span>
+<span class="fc" id="L30">                .collect(Collectors.toSet());</span>
+
+        // Calculate the union of the two sets
+<span class="fc" id="L33">        Set&lt;Integer&gt; union = Stream.concat(setA.stream(), setB.stream())</span>
+<span class="fc" id="L34">                .distinct().sorted()</span>
+<span class="fc" id="L35">                .collect(Collectors.toSet());</span>
+
+
+<span class="fc" id="L38">        return ((float)intersection.size() / union.size()) * 100;</span>
+    }
+
+
+    /**
+     * jaccardScoreAdvanced is a function to Calculate Jaccard score
+     * &amp; give a line by line comparision report between two AST objects
+     * @param ast1 An ast object
+     * @param ast2 An ast object
+     * @return the Comparision Report for two AST's
+     */
+    private ComparisionReport jaccardScoreAdvanced(Ast ast1, Ast ast2) {
+<span class="fc" id="L50">        Set&lt;Integer&gt; setA = new HashSet&lt;&gt;(ast1.getHashcodesList());</span>
+<span class="fc" id="L51">        Set&lt;Integer&gt; setB = new HashSet&lt;&gt;(ast2.getHashcodesList());</span>
+
+<span class="fc" id="L53">        Map&lt;Integer, List&lt;LineMatch&gt;&gt; lineMapA = ast1.getHashcodesLineMatch();</span>
+<span class="fc" id="L54">        Map&lt;Integer, List&lt;LineMatch&gt;&gt; lineMapB = ast2.getHashcodesLineMatch();</span>
+
+<span class="fc" id="L56">        Set&lt;Integer&gt; intersection = setA.stream()</span>
+<span class="fc" id="L57">                .filter(setB::contains)</span>
+<span class="fc" id="L58">                .collect(Collectors.toSet());</span>
+
+        // Calculate the union of the two sets
+<span class="fc" id="L61">        Set&lt;Integer&gt; union = Stream.concat(setA.stream(), setB.stream())</span>
+<span class="fc" id="L62">                .distinct().sorted()</span>
+<span class="fc" id="L63">                .collect(Collectors.toSet());</span>
+
+<span class="fc" id="L65">        ComparisionReport cr = new ComparisionReport();</span>
+<span class="fc" id="L66">        cr.setSimilarity(1.0 * intersection.size() / union.size() * 100);</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (Integer id : intersection) {</span>
+<span class="fc" id="L69">            cr.addToLinesMap1(lineMapA.get(id));</span>
+<span class="fc" id="L70">            cr.addToLinesMap2(lineMapB.get(id));</span>
+<span class="fc" id="L71">        }</span>
+<span class="fc" id="L72">        return cr;</span>
+    }
+
+    /** compareTwoFiles is a method to compare two python files
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a similarity score
+     */
+    @Override
+    public double compareTwoFiles(PythonFile f1, PythonFile f2) {
+<span class="fc" id="L82">        Ast ast1 = new Ast(f1);</span>
+<span class="fc" id="L83">        Ast ast2 = new Ast(f2);</span>
+
+<span class="fc" id="L85">        return jaccardScore(ast1, ast2);</span>
+    }
+
+    /** compareTwoFilesAdvanced method to compare two python files
+     * and generate a comparision report
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a comparision Report
+     */
+    @Override
+    public ComparisionReport compareTwoFilesAdvanced(PythonFile f1, PythonFile f2) {
+<span class="fc" id="L96">        Ast ast1 = new Ast(f1);</span>
+<span class="fc" id="L97">        Ast ast2 = new Ast(f2);</span>
+
+<span class="fc" id="L99">        ComparisionReport comparisionReport = jaccardScoreAdvanced(ast1, ast2);</span>
+
+<span class="fc" id="L101">        comparisionReport.setFile1(f1);</span>
+<span class="fc" id="L102">        comparisionReport.setFile2(f2);</span>
+
+<span class="fc" id="L104">        return comparisionReport;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

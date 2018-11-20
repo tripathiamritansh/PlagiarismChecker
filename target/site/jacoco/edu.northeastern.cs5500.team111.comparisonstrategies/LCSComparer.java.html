@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LCSComparer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">LCSComparer.java</span></div><h1>LCSComparer.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Implementation of filecomparer class to compute the similarity of two files using Longest common sub sequence
+ * algorithm
+ */
+<span class="fc" id="L12">public class LCSComparer implements FileComparer {</span>
+
+    /**
+     * Get the LCS rate of two strings
+     *
+     * @param text1 a String
+     * @param text2 a String
+     * @return rate of LCS referring the plagiarism rate
+     */
+    private double longestCommonSubsequence(String text1, String text2) {
+<span class="fc" id="L22">        List&lt;LCSObject&gt; wordList1 = LCSUtils.extractWords(text1);</span>
+<span class="fc" id="L23">        List&lt;LCSObject&gt; wordList2 = LCSUtils.extractWords(text2);</span>
+
+<span class="fc" id="L25">        LCSObject[] wordArray1 = wordList1.toArray(new LCSObject[wordList1.size()]);</span>
+<span class="fc" id="L26">        LCSObject[] wordArray2 = wordList2.toArray(new LCSObject[wordList2.size()]);</span>
+<span class="fc" id="L27">        int[][] lcxMatrix = LCSUtils.lcsMatrixGenerator(wordArray1, wordArray2);</span>
+<span class="fc" id="L28">        return (double) lcxMatrix[0][0] / (double) Math.max(wordList1.size(),</span>
+<span class="fc" id="L29">                wordList2.size());</span>
+    }
+
+    /**
+     * Method to compare two python files
+     *
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a similarity score
+     */
+    @Override
+    public double compareTwoFiles(PythonFile f1, PythonFile f2) {
+<span class="fc" id="L41">        String content1 = new String(f1.getFileContent());</span>
+<span class="fc" id="L42">        String content2 = new String(f2.getFileContent());</span>
+<span class="fc" id="L43">        return longestCommonSubsequence(content1, content2) * 100;</span>
+    }
+
+
+    /**
+     * lcsScoreAdvanced method to compare two python files
+     * and generate a comparision report
+     *
+     * @param text1 first file to be compared converted to String
+     * @param text2 second file to be compared converted to String
+     * @return a comparision Report
+     */
+    private ComparisionReport lcsScoreAdvanced(String text1, String text2) {
+<span class="fc" id="L56">        List&lt;LCSObject&gt; wordList1 = LCSUtils.extractWords(text1);</span>
+<span class="fc" id="L57">        List&lt;LCSObject&gt; wordList2 = LCSUtils.extractWords(text2);</span>
+
+<span class="fc" id="L59">        LCSObject[] wordArray1 = wordList1.toArray(new LCSObject[wordList1.size()]);</span>
+<span class="fc" id="L60">        LCSObject[] wordArray2 = wordList1.toArray(new LCSObject[wordList2.size()]);</span>
+
+<span class="fc" id="L62">        int[][] lcxMatrix = LCSUtils.lcsMatrixGenerator(wordArray1, wordArray2);</span>
+<span class="fc" id="L63">        ComparisionReport cr = new ComparisionReport();</span>
+<span class="fc" id="L64">        cr.similarity = (double) lcxMatrix[0][0] / (double) Math.max(wordList1.size(),</span>
+<span class="fc" id="L65">                wordList2.size()) * 100;</span>
+<span class="fc" id="L66">        List&lt;ArrayList&lt;Object&gt;&gt; intersection = LCSUtils.getMatchResult(wordArray1, wordArray2, lcxMatrix);</span>
+
+<span class="fc" id="L68">        cr.addToLinesMap1(LCSUtils.lcsObjectTransfer(intersection.get(0)));</span>
+<span class="fc" id="L69">        cr.addToLinesMap2(LCSUtils.lcsObjectTransfer(intersection.get(1)));</span>
+
+<span class="fc" id="L71">        return cr;</span>
+    }
+
+    /**
+     * compareTwoFilesAdvanced method to compare two python files
+     * and generate a comparision report
+     *
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a comparision Report
+     */
+    @Override
+    public ComparisionReport compareTwoFilesAdvanced(PythonFile f1, PythonFile f2) {
+
+<span class="fc" id="L85">        String content1 = new String(f1.getFileContent());</span>
+<span class="fc" id="L86">        String content2 = new String(f2.getFileContent());</span>
+<span class="fc" id="L87">        ComparisionReport comparisionReport = lcsScoreAdvanced(content1, content2);</span>
+<span class="fc" id="L88">        comparisionReport.setFile1(f1);</span>
+<span class="fc" id="L89">        comparisionReport.setFile2(f2);</span>
+
+<span class="fc" id="L91">        return comparisionReport;</span>
+
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>HungarianAlgorithm.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">HungarianAlgorithm.java</span></div><h1>HungarianAlgorithm.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import java.util.Arrays;
+
+/* Copyright (c) 2012 Kevin L. Stern
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+/**
+ * An implementation of the Hungarian algorithm for solving the assignment
+ * problem. An instance of the assignment problem consists of a number of
+ * workers along with a number of jobs and a cost matrix which gives the cost of
+ * assigning the i'th worker to the j'th job at position (i, j). The goal is to
+ * find an assignment of workers to jobs so that no job is assigned more than
+ * one worker and so that no worker is assigned to more than one job in such a
+ * manner so as to minimize the total cost of completing the jobs.
+ * &lt;p&gt;
+ *
+ * An assignment for a cost matrix that has more workers than jobs will
+ * necessarily include unassigned workers, indicated by an assignment value of
+ * -1; in no other circumstance will there be unassigned workers. Similarly, an
+ * assignment for a cost matrix that has more jobs than workers will necessarily
+ * include unassigned jobs; in no other circumstance will there be unassigned
+ * jobs. For completeness, an assignment for a square cost matrix will give
+ * exactly one unique worker to each job.
+ * &lt;p&gt;
+ *
+ * This version of the Hungarian algorithm runs in time O(n^3), where n is the
+ * maximum among the number of workers and the number of jobs.
+ *
+ * @author Kevin L. Stern
+ */
+public class HungarianAlgorithm {
+    private final double[][] costMatrix;
+    private final int rows;
+    private final int cols;
+    private final int dim;
+    private final double[] labelByWorker;
+    private final double[] labelByJob;
+    private final int[] minSlackWorkerByJob;
+    private final double[] minSlackValueByJob;
+    private final int[] matchJobByWorker;
+    private final int[] matchWorkerByJob;
+    private final int[] parentWorkerByCommittedJob;
+    private final boolean[] committedWorkers;
+
+    /**
+     * Construct an instance of the algorithm.
+     *
+     * @param costMatrix
+     *          the cost matrix, where matrix[i][j] holds the cost of assigning
+     *          worker i to job j, for all i, j. The cost matrix must not be
+     *          irregular in the sense that all rows must be the same length; in
+     *          addition, all entries must be non-infinite numbers.
+     */
+<span class="fc" id="L73">     HungarianAlgorithm(double[][] costMatrix) {</span>
+<span class="fc" id="L74">        this.dim = Math.max(costMatrix.length, costMatrix[0].length);</span>
+<span class="fc" id="L75">        this.rows = costMatrix.length;</span>
+<span class="fc" id="L76">        this.cols = costMatrix[0].length;</span>
+<span class="fc" id="L77">        this.costMatrix = new double[this.dim][this.dim];</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (int w = 0; w &lt; this.dim; w++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            if (w &lt; costMatrix.length) {</span>
+<span class="fc" id="L80">                this.costMatrix[w] = Arrays.copyOf(costMatrix[w], this.dim);</span>
+            } else {
+<span class="fc" id="L82">                this.costMatrix[w] = new double[this.dim];</span>
+            }
+        }
+<span class="fc" id="L85">        labelByWorker = new double[this.dim];</span>
+<span class="fc" id="L86">        labelByJob = new double[this.dim];</span>
+<span class="fc" id="L87">        minSlackWorkerByJob = new int[this.dim];</span>
+<span class="fc" id="L88">        minSlackValueByJob = new double[this.dim];</span>
+<span class="fc" id="L89">        committedWorkers = new boolean[this.dim];</span>
+<span class="fc" id="L90">        parentWorkerByCommittedJob = new int[this.dim];</span>
+<span class="fc" id="L91">        matchJobByWorker = new int[this.dim];</span>
+<span class="fc" id="L92">        Arrays.fill(matchJobByWorker, -1);</span>
+<span class="fc" id="L93">        matchWorkerByJob = new int[this.dim];</span>
+<span class="fc" id="L94">        Arrays.fill(matchWorkerByJob, -1);</span>
+<span class="fc" id="L95">    }</span>
+
+    /**
+     * Compute an initial feasible solution by assigning zero labels to the
+     * workers and by assigning to each job a label equal to the minimum cost
+     * among its incident edges.
+     */
+    private void computeInitialFeasibleSolution() {
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc" id="L104">            labelByJob[j] = Double.POSITIVE_INFINITY;</span>
+        }
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">                if (costMatrix[w][j] &lt; labelByJob[j]) {</span>
+<span class="fc" id="L109">                    labelByJob[j] = costMatrix[w][j];</span>
+                }
+            }
+        }
+<span class="fc" id="L113">    }</span>
+
+    /**
+     * Execute the algorithm.
+     *
+     * @return the minimum cost matching of workers to jobs based upon the
+     *         provided cost matrix. A matching value of -1 indicates that the
+     *         corresponding worker is unassigned.
+     */
+    public int[] execute() {
+    /*
+     * Heuristics to improve performance: Reduce rows and columns by their
+     * smallest element, compute an initial non-zero dual feasible solution and
+     * create a greedy matching from workers to jobs of the cost matrix.
+     */
+<span class="fc" id="L128">        reduce();</span>
+<span class="fc" id="L129">        computeInitialFeasibleSolution();</span>
+<span class="fc" id="L130">        greedyMatch();</span>
+
+<span class="fc" id="L132">        int w = fetchUnmatchedWorker();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        while (w &lt; dim) {</span>
+<span class="fc" id="L134">            initializePhase(w);</span>
+<span class="fc" id="L135">            executePhase();</span>
+<span class="fc" id="L136">            w = fetchUnmatchedWorker();</span>
+        }
+<span class="fc" id="L138">        int[] result = Arrays.copyOf(matchJobByWorker, rows);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">        for (w = 0; w &lt; result.length; w++) {</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">            if (result[w] &gt;= cols) {</span>
+<span class="nc" id="L141">                result[w] = -1;</span>
+            }
+        }
+<span class="fc" id="L144">        return result;</span>
+    }
+
+    /**
+     * Execute a single phase of the algorithm. A phase of the Hungarian algorithm
+     * consists of building a set of committed workers and a set of committed jobs
+     * from a root unmatched worker by following alternating unmatched/matched
+     * zero-slack edges. If an unmatched job is encountered, then an augmenting
+     * path has been found and the matching is grown. If the connected zero-slack
+     * edges have been exhausted, the labels of committed workers are increased by
+     * the minimum slack among committed workers and non-committed jobs to create
+     * more zero-slack edges (the labels of committed jobs are simultaneously
+     * decreased by the same amount in order to maintain a feasible labeling).
+     * &lt;p&gt;
+     *
+     * The runtime of a single phase of the algorithm is O(n^2), where n is the
+     * dimension of the internal square cost matrix, since each edge is visited at
+     * most once and since increasing the labeling is accomplished in time O(n) by
+     * maintaining the minimum slack values among non-committed jobs. When a phase
+     * completes, the matching will have increased in size.
+     */
+    private void executePhase() {
+        while (true) {
+<span class="fc" id="L167">            int minSlackWorker = -1;</span>
+<span class="fc" id="L168">            int minSlackJob = -1;</span>
+<span class="fc" id="L169">            double minSlackValue = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L171" title="All 4 branches covered.">                if (parentWorkerByCommittedJob[j] == -1 &amp;&amp; minSlackValueByJob[j] &lt; minSlackValue) {</span>
+<span class="fc" id="L172">                        minSlackValue = minSlackValueByJob[j];</span>
+<span class="fc" id="L173">                        minSlackWorker = minSlackWorkerByJob[j];</span>
+<span class="fc" id="L174">                        minSlackJob = j;</span>
+                }
+            }
+<span class="fc bfc" id="L177" title="All 2 branches covered.">            if (minSlackValue &gt; 0) {</span>
+<span class="fc" id="L178">                updateLabeling(minSlackValue);</span>
+            }
+<span class="fc" id="L180">            parentWorkerByCommittedJob[minSlackJob] = minSlackWorker;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (matchWorkerByJob[minSlackJob] == -1) {</span>
+<span class="fc" id="L182">            		augPathFound(minSlackJob);</span>
+<span class="fc" id="L183">                return;</span>
+            } else {
+        
+<span class="fc" id="L186">            	updateSlackValues(minSlackJob);</span>
+                
+            }
+<span class="fc" id="L189">        }</span>
+    }
+    
+    /**
+     * An augmenting path has been found.
+     * So update the parentWorkerByCommittedJob
+     */
+    private void augPathFound(int minSlackJob)
+    {
+<span class="fc" id="L198">    	int committedJob = minSlackJob;</span>
+<span class="fc" id="L199">        int parentWorker = parentWorkerByCommittedJob[committedJob];</span>
+        while (true) {
+<span class="fc" id="L201">            int temp = matchJobByWorker[parentWorker];</span>
+<span class="fc" id="L202">            match(parentWorker, committedJob);</span>
+<span class="fc" id="L203">            committedJob = temp;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">            if (committedJob == -1) {</span>
+<span class="fc" id="L205">                break;</span>
+            }
+<span class="fc" id="L207">            parentWorker = parentWorkerByCommittedJob[committedJob];</span>
+<span class="fc" id="L208">        }</span>
+<span class="fc" id="L209">    }</span>
+    
+    /**
+     * Update slack values since we increased the size of the committed
+     * workers set.
+     * So update the parentWorkerByCommittedJob
+     */
+    private void updateSlackValues(int minSlackJob)
+    {
+<span class="fc" id="L218">    	int worker = matchWorkerByJob[minSlackJob];</span>
+<span class="fc" id="L219">        committedWorkers[worker] = true;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">        for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">            if (parentWorkerByCommittedJob[j] == -1) {</span>
+<span class="fc" id="L222">                double slack = costMatrix[worker][j] - labelByWorker[worker]</span>
+                        - labelByJob[j];
+<span class="fc bfc" id="L224" title="All 2 branches covered.">                if (minSlackValueByJob[j] &gt; slack) {</span>
+<span class="fc" id="L225">                    minSlackValueByJob[j] = slack;</span>
+<span class="fc" id="L226">                    minSlackWorkerByJob[j] = worker;</span>
+                }
+            }
+        }
+<span class="fc" id="L230">    }</span>
+
+    /**
+     *
+     * @return the first unmatched worker or {@link #dim} if none.
+     */
+    private int fetchUnmatchedWorker() {
+        int w;
+<span class="fc bfc" id="L238" title="All 2 branches covered.">        for (w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">            if (matchJobByWorker[w] == -1) {</span>
+<span class="fc" id="L240">                break;</span>
+            }
+        }
+<span class="fc" id="L243">        return w;</span>
+    }
+
+    /**
+     * Find a valid matching by greedily selecting among zero-cost matchings. This
+     * is a heuristic to jump-start the augmentation algorithm.
+     */
+    private void greedyMatch() {
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L253" title="All 6 branches covered.">                if (matchJobByWorker[w] == -1 &amp;&amp; matchWorkerByJob[j] == -1</span>
+                        &amp;&amp; costMatrix[w][j] - labelByWorker[w] - labelByJob[j] == 0) {
+<span class="fc" id="L255">                    match(w, j);</span>
+                }
+            }
+        }
+<span class="fc" id="L259">    }</span>
+
+    /**
+     * Initialize the next phase of the algorithm by clearing the committed
+     * workers and jobs sets and by initializing the slack arrays to the values
+     * corresponding to the specified root worker.
+     *
+     * @param w
+     *          the worker at which to root the next phase.
+     */
+    private void initializePhase(int w) {
+<span class="fc" id="L270">        Arrays.fill(committedWorkers, false);</span>
+<span class="fc" id="L271">        Arrays.fill(parentWorkerByCommittedJob, -1);</span>
+<span class="fc" id="L272">        committedWorkers[w] = true;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc" id="L274">            minSlackValueByJob[j] = costMatrix[w][j] - labelByWorker[w]</span>
+                    - labelByJob[j];
+<span class="fc" id="L276">            minSlackWorkerByJob[j] = w;</span>
+        }
+<span class="fc" id="L278">    }</span>
+
+    /**
+     * Helper method to record a matching between worker w and job j.
+     */
+    private void match(int w, int j) {
+<span class="fc" id="L284">        matchJobByWorker[w] = j;</span>
+<span class="fc" id="L285">        matchWorkerByJob[j] = w;</span>
+<span class="fc" id="L286">    }</span>
+
+    /**
+     * Reduce the cost matrix by subtracting the smallest element of each row from
+     * all elements of the row as well as the smallest element of each column from
+     * all elements of the column. Note that an optimal assignment for a reduced
+     * cost matrix is optimal for the original cost matrix.
+     */
+    private void reduce() {
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc" id="L296">            double min = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">                if (costMatrix[w][j] &lt; min) {</span>
+<span class="fc" id="L299">                    min = costMatrix[w][j];</span>
+                }
+            }
+<span class="fc bfc" id="L302" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc" id="L303">                costMatrix[w][j] -= min;</span>
+            }
+        }
+<span class="fc" id="L306">        reduceDim();</span>
+<span class="fc" id="L307">    }</span>
+
+    /**
+     * Reduce the cost matrix by subtracting the smallest element of each row from
+     * all elements of the row as well as the smallest element of each column from
+     * all elements of the column. Note that an optimal assignment for a reduced
+     * cost matrix is optimal for the original cost matrix.
+     */
+    private void reduceDim()
+    {
+<span class="fc" id="L317">    	double[] min = new double[dim];</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc" id="L319">            min[j] = Double.POSITIVE_INFINITY;</span>
+        }
+<span class="fc bfc" id="L321" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                if (costMatrix[w][j] &lt; min[j]) {</span>
+<span class="fc" id="L324">                    min[j] = costMatrix[w][j];</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L328" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">            for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc" id="L330">                costMatrix[w][j] -= min[j];</span>
+            }
+        }
+<span class="fc" id="L333">    }</span>
+
+    /**
+     * Update labels with the specified slack by adding the slack value for
+     * committed workers and by subtracting the slack value for committed jobs. In
+     * addition, update the minimum slack values appropriately.
+     */
+    private void updateLabeling(double slack) {
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        for (int w = 0; w &lt; dim; w++) {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">            if (committedWorkers[w]) {</span>
+<span class="fc" id="L343">                labelByWorker[w] += slack;</span>
+            }
+        }
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        for (int j = 0; j &lt; dim; j++) {</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">            if (parentWorkerByCommittedJob[j] != -1) {</span>
+<span class="fc" id="L348">                labelByJob[j] -= slack;</span>
+            } else {
+<span class="fc" id="L350">                minSlackValueByJob[j] -= slack;</span>
+            }
+        }
+<span class="fc" id="L353">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

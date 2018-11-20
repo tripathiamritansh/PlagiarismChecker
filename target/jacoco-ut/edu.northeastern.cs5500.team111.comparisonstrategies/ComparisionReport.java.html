@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ComparisionReport.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">ComparisionReport.java</span></div><h1>ComparisionReport.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Comparision Report Class, used to generate
+ * line by line comparision report
+ */
+
+public class ComparisionReport {
+
+    double similarity;
+
+    private HashMap&lt;Integer,List&lt;Pair&gt;&gt; linesMap1;
+    private HashMap&lt;Integer,List&lt;Pair&gt;&gt; linesMap2;
+
+    private PythonFile file1;
+    private PythonFile file2;
+
+    /**
+     * Class constructor, initializing parameters
+     */
+    public ComparisionReport()
+<span class="fc" id="L30">    {</span>
+<span class="fc" id="L31">        similarity = 0.0;</span>
+<span class="fc" id="L32">        linesMap1  = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L33">        linesMap2  = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L34">    }</span>
+
+    /**
+     * Add line matches to first file's Hash Map
+     * @param lineMatches list of lineMatches to be added to the first Line map
+     */
+    public void addToLinesMap1(List&lt;LineMatch&gt; lineMatches) {
+<span class="fc" id="L41">        addToLinesMap(lineMatches,linesMap1);</span>
+<span class="fc" id="L42">    }</span>
+
+    /**
+     * Add line matches to second file's Hash Map
+     * @param lineMatches list of lineMatches to be added to the second Line map
+     */
+    public void addToLinesMap2(List&lt;LineMatch&gt; lineMatches) {
+<span class="fc" id="L49">        addToLinesMap(lineMatches, linesMap2);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * Add line numbers to Hash Map
+     * @param lineMatches List of LineMatches to be added
+     * @param lineMatches1 Map for line and pair for indices (starting and ending)
+     */
+    private void addToLinesMap(List&lt;LineMatch&gt; lineMatches, Map&lt;Integer,List&lt;Pair&gt;&gt; lineMatches1)
+    {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (LineMatch match: lineMatches) {</span>
+            // Include in the map if already exists otherwise create a new key,value set
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if(lineMatches1.containsKey(match.line)) {</span>
+<span class="fc" id="L62">                lineMatches1.get(match.line).add(new Pair(match.startIndex,match.stopIndex));</span>
+            } else {
+<span class="fc" id="L64">                lineMatches1.put(match.line,new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L65">                lineMatches1.get(match.line).add(new Pair(match.startIndex,match.stopIndex));</span>
+            }
+<span class="fc" id="L67">        }</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * Getters $ Setters
+     */
+
+    public double getSimilarity() {
+<span class="fc" id="L75">        return similarity;</span>
+    }
+
+    public void setSimilarity(double similarity) {
+<span class="fc" id="L79">        this.similarity = similarity;</span>
+<span class="fc" id="L80">    }</span>
+
+    public Map&lt;Integer, List&lt;Pair&gt;&gt; getLinesMap1() {
+<span class="fc" id="L83">        return linesMap1;</span>
+    }
+
+    public Map&lt;Integer, List&lt;Pair&gt;&gt; getLinesMap2() {
+<span class="fc" id="L87">        return linesMap2;</span>
+    }
+
+    public PythonFile getFile2() {
+<span class="fc" id="L91">        return file2;</span>
+    }
+
+    public void setFile2(PythonFile file2) {
+<span class="fc" id="L95">        this.file2 = file2;</span>
+<span class="fc" id="L96">    }</span>
+
+    public PythonFile getFile1() {
+<span class="fc" id="L99">        return file1;</span>
+    }
+
+    public void setFile1(PythonFile file1) {
+<span class="fc" id="L103">        this.file1 = file1;</span>
+<span class="fc" id="L104">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

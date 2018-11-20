@@ -1,0 +1,67 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 6, Skipped: 0, Time elapsed: 0.507 sec <<< FAILURE! - in edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest
+compareAdvancedTwoSlightlyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.04 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFilesAdvanced(MachineLearningModel.java:83)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.compareAdvancedTwoSlightlyDifferentFiles(MachineLearningModelTest.java:72)
+
+testTwoCompletelyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.226 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFiles(MachineLearningModel.java:67)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.testTwoCompletelyDifferentFiles(MachineLearningModelTest.java:46)
+
+compareTwoSameFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.056 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFiles(MachineLearningModel.java:67)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.compareTwoSameFiles(MachineLearningModelTest.java:51)
+
+compareAdvancedTestTwoCompletelyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.107 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFilesAdvanced(MachineLearningModel.java:83)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.compareAdvancedTestTwoCompletelyDifferentFiles(MachineLearningModelTest.java:62)
+
+compareAdvancedTwoSameFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.024 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFilesAdvanced(MachineLearningModel.java:83)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.compareAdvancedTwoSameFiles(MachineLearningModelTest.java:67)
+
+compareTwoSlightlyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest)  Time elapsed: 0.05 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.MachineLearningModel.compareTwoFiles(MachineLearningModel.java:67)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.MachineLearningModelTest.compareTwoSlightlyDifferentFiles(MachineLearningModelTest.java:56)
+

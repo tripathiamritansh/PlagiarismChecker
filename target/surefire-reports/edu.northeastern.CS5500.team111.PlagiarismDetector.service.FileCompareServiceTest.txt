@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.PlagiarismDetector.service.FileCompareServiceTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.316 sec <<< FAILURE! - in edu.northeastern.CS5500.team111.PlagiarismDetector.service.FileCompareServiceTest
+advancedCompareFilesUsingEditDistance(edu.northeastern.CS5500.team111.PlagiarismDetector.service.FileCompareServiceTest)  Time elapsed: 0.066 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.StrategyContext.getComparisonReport(StrategyContext.java:47)
+	at edu.northeastern.cs5500.team111.plagiarismdetector.service.FileCompareService.compareUploadedFiles(FileCompareService.java:69)
+	at edu.northeastern.CS5500.team111.PlagiarismDetector.service.FileCompareServiceTest.advancedCompareFilesUsingEditDistance(FileCompareServiceTest.java:87)
+

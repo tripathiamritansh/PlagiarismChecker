@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MachineLearningModel.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">MachineLearningModel.java</span></div><h1>MachineLearningModel.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+/**
+ * Class to give the similarity score of two files using the weight of each algorithm. The weight for each algorithm is
+ * is calculated using gradient descent algorithm.
+ */
+public class MachineLearningModel implements FileComparer{
+
+<span class="fc" id="L11">    private JaccardComparer jaccardComparer = new JaccardComparer();</span>
+<span class="fc" id="L12">    private LCSComparer lcsComparer = new LCSComparer();</span>
+<span class="fc" id="L13">    private LCSComparerAdvanced lcsComparerAdvanced = new LCSComparerAdvanced();</span>
+<span class="fc" id="L14">    private TokenEditDistComparer tokenEditDistComparer = new TokenEditDistComparer();</span>
+
+<span class="fc" id="L16">    private double[] jaccard = new double[]{100.0,55.55555555555556,0.9433962264150944,0.0,68.0};</span>
+<span class="fc" id="L17">    private double[] tokenDist = new double[]{100.0,94.96201108832688,11.31014566834548,6.428571428571428,83.83374531324621};</span>
+<span class="fc" id="L18">    private double[] lcsCompare = new double[]{100.0,35.1063829787234,3.275529865125241,0.0,45.794392523364486};</span>
+<span class="fc" id="L19">    private double[] lcsComparerAdv = new double[]{100.0,99.07407407407408,9.503695881731785, 4.62962962962963,   91.21338912133892};</span>
+<span class="fc" id="L20">    private double[] mossOutput = new double[]{96.0, 76.0,0.0, 0.0,  83.0};</span>
+
+<span class="fc" id="L22">    private double jaccardWeight=0.25;</span>
+<span class="fc" id="L23">    private double tokenEditWeight =0.25;</span>
+<span class="fc" id="L24">    private double lcsWeight=0.25;</span>
+<span class="fc" id="L25">    private double lcsAdvWeight=0.25;</span>
+
+<span class="fc" id="L27">    private double learningWeight = 0.001;</span>
+<span class="fc" id="L28">    private int iterations=100;</span>
+
+    /**
+     * Machine Learning Model Constructor
+     * We train our models based on moss's comparision output
+     * and assign specified weights
+     */
+    public MachineLearningModel()
+<span class="fc" id="L36">    {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        for (int j=0;j&lt;iterations;j++) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            for (int i = 0; i &lt; mossOutput.length; i++) {</span>
+<span class="fc" id="L39">                double wscore = jaccardWeight * jaccard[i] + tokenEditWeight * tokenDist[i] + lcsWeight * lcsCompare[i] + lcsComparerAdv[i] * lcsAdvWeight;</span>
+
+<span class="fc" id="L41">                double error = -1 * (mossOutput[i] - wscore);</span>
+
+<span class="fc" id="L43">                jaccardWeight = jaccardWeight - learningWeight * error * jaccard[i];</span>
+<span class="fc" id="L44">                tokenEditWeight = tokenEditWeight - learningWeight * error * (tokenDist[i]);</span>
+<span class="fc" id="L45">                lcsWeight = lcsWeight - learningWeight * error * (lcsCompare[i]);</span>
+<span class="fc" id="L46">                lcsAdvWeight = lcsAdvWeight - learningWeight * error * (lcsComparerAdv[i]);</span>
+
+<span class="fc" id="L48">                double totalWeight = jaccardWeight + lcsAdvWeight + lcsWeight + jaccardWeight;</span>
+<span class="fc" id="L49">                jaccardWeight = jaccardWeight / totalWeight;</span>
+<span class="fc" id="L50">                tokenEditWeight = tokenEditWeight / totalWeight;</span>
+<span class="fc" id="L51">                lcsWeight = lcsWeight / totalWeight;</span>
+<span class="fc" id="L52">                lcsAdvWeight = lcsAdvWeight / totalWeight;</span>
+
+            }
+        }
+<span class="fc" id="L56">    }</span>
+
+    /**
+     * Method to compare two python files
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a similarity score
+     */
+    @Override
+    public double compareTwoFiles(PythonFile f1, PythonFile f2) {
+<span class="pc" id="L66">        return Math.min(jaccardWeight * jaccardComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L67">                + tokenEditWeight * tokenEditDistComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L68">                + lcsWeight * lcsComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L69">                + lcsAdvWeight * lcsComparerAdvanced.compareTwoFiles(f1,f2),100.0);</span>
+
+    }
+
+    /**
+     * Method to compare two python files and generate Line By Line
+     * Comparision
+     * @param f1 first file to be compared of type PythonFile
+     * @param f2 second file to be compared of type PythonFile
+     * @return a Comparision Report containing line by line comparision
+     */
+    @Override
+    public ComparisionReport compareTwoFilesAdvanced(PythonFile f1, PythonFile f2) {
+
+<span class="nc" id="L83">        ComparisionReport cr = tokenEditDistComparer.compareTwoFilesAdvanced(f1,f2);</span>
+<span class="nc" id="L84">        cr.setSimilarity(Math.min(jaccardWeight * jaccardComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L85">                + tokenEditWeight * tokenEditDistComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L86">                + lcsWeight * lcsComparer.compareTwoFiles(f1,f2)</span>
+<span class="nc" id="L87">                + lcsAdvWeight * lcsComparerAdvanced.compareTwoFiles(f1,f2),100.0));</span>
+<span class="nc" id="L88">        return cr;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

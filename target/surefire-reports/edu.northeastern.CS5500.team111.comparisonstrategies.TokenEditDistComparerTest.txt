@@ -1,0 +1,61 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 6, Skipped: 0, Time elapsed: 0.296 sec <<< FAILURE! - in edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest
+compareAdvancedTwoSlightlyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.02 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareAdvancedTwoSlightlyDifferentFiles(TokenEditDistComparerTest.java:65)
+
+compareTwoSameFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.024 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareTwoSameFiles(TokenEditDistComparerTest.java:59)
+
+compareAdvancedTwoCompletelyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.101 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareAdvancedTwoCompletelyDifferentFiles(TokenEditDistComparerTest.java:71)
+
+compareAdvancedTwoSameFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.023 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.calculateNameTokenSimilarityAdvanced(TokenEditDistComparer.java:161)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFilesAdvanced(TokenEditDistComparer.java:209)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareAdvancedTwoSameFiles(TokenEditDistComparerTest.java:76)
+
+compareTwoSlightlyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.024 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareTwoSlightlyDifferentFiles(TokenEditDistComparerTest.java:47)
+
+compareTwoCompletelyDifferentFiles(edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest)  Time elapsed: 0.1 sec  <<< ERROR!
+java.lang.NullPointerException: null
+	at sun.misc.FloatingDecimal.readJavaFormatString(FloatingDecimal.java:1838)
+	at sun.misc.FloatingDecimal.parseDouble(FloatingDecimal.java:110)
+	at java.lang.Double.parseDouble(Double.java:538)
+	at edu.northeastern.cs5500.team111.util.AlgoProperties.loadFloat(AlgoProperties.java:34)
+	at edu.northeastern.cs5500.team111.comparisonstrategies.TokenEditDistComparer.compareTwoFiles(TokenEditDistComparer.java:186)
+	at edu.northeastern.CS5500.team111.comparisonstrategies.TokenEditDistComparerTest.compareTwoCompletelyDifferentFiles(TokenEditDistComparerTest.java:53)
+

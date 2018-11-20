@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: edu.northeastern.CS5500.team111.PlagiarismDetector.controllers.FileControllerTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.401 sec - in edu.northeastern.CS5500.team111.PlagiarismDetector.controllers.FileControllerTest

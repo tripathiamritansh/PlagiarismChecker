@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TokenEditDistUtils.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">TokenEditDistUtils.java</span></div><h1>TokenEditDistUtils.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import org.antlr.v4.runtime.Token;
+
+import java.util.*;
+
+/**
+ * Util class for TokenEditDistComparer
+ */
+<span class="fc" id="L10">public class TokenEditDistUtils {</span>
+
+    /**
+     * Function to calculate edit distance between two strings
+     * @param s1 string 1
+     * @param s2 string 2
+     * @return integer which represents the edit distance
+     */
+    public int editDistance(String s1, String s2) {
+<span class="fc" id="L19">        int[][] edits = new int[s1.length() + 1][s2.length() + 1];</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        for (int i = 0; i &lt;= s1.length(); i++)</span>
+<span class="fc" id="L21">            edits[i][0] = i;</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        for (int j = 1; j &lt;= s2.length(); j++)</span>
+<span class="fc" id="L23">            edits[0][j] = j;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 1; i &lt;= s1.length(); i++) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            for (int j = 1; j &lt;= s2.length(); j++) {</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">                int u = (s1.charAt(i - 1) == s2.charAt(j - 1) ? 0 : 1);</span>
+<span class="fc" id="L27">                edits[i][j] = Math.min(edits[i - 1][j] + 1,</span>
+<span class="fc" id="L28">                        Math.min(edits[i][j - 1] + 1, edits[i - 1][j - 1] + u));</span>
+            }
+        }
+<span class="fc" id="L31">        return edits[s1.length()][s2.length()];</span>
+    }
+
+
+    /**
+     * getHashCodeLineMatch method makes the map of keyword and line matches
+     * based on list of tokens passed
+     * @param tokenList list of tokens
+     * @return a map of the keyword and line matches
+     */
+    public Map&lt;String,List&lt;LineMatch&gt;&gt; getHashCodeLineMatch(List&lt;Token&gt; tokenList) {
+
+<span class="fc" id="L43">        Map&lt;String,List&lt;LineMatch&gt;&gt; hashCodeLineMatch = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (Token token : tokenList) {</span>
+<span class="fc" id="L46">            LineMatch temp = new LineMatch();</span>
+<span class="fc" id="L47">            temp.setLine(token.getLine());</span>
+<span class="fc" id="L48">            temp.setStartIndex(token.getCharPositionInLine());</span>
+<span class="fc" id="L49">            temp.setStopIndex(token.getCharPositionInLine()+token.getText().length());</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (hashCodeLineMatch.containsKey(token.getText())) {</span>
+<span class="fc" id="L52">                hashCodeLineMatch.get(token.getText()).add(temp);</span>
+            } else {
+<span class="fc" id="L54">                hashCodeLineMatch.put(token.getText(), new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L55">                hashCodeLineMatch.get(token.getText()).add(temp);</span>
+            }
+<span class="fc" id="L57">        }</span>
+
+<span class="fc" id="L59">        return hashCodeLineMatch;</span>
+    }
+
+    /**
+     *  Function to remove duplicate tokens from a list and return the respective strings
+     * @param tokenList an arrayList of tokens
+     * @return an arrayList of strings
+     */
+    public List&lt;String&gt; removeTokenListDuplicates(List&lt;Token&gt; tokenList)
+    {
+<span class="fc" id="L69">        HashSet&lt;String&gt; tokListStr = new HashSet&lt;&gt;();</span>
+
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        for (Token token : tokenList) {</span>
+<span class="fc" id="L72">            tokListStr.add(token.getText());</span>
+<span class="fc" id="L73">        }</span>
+
+<span class="fc" id="L75">        return new ArrayList&lt;&gt;(tokListStr);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AstWalk.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.astgen</a> &gt; <span class="el_source">AstWalk.java</span></div><h1>AstWalk.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.astgen;
+
+import edu.northeastern.cs5500.team111.comparisonstrategies.LineMatch;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
+import edu.northeastern.cs5500.team111.comparisonstrategies.ComparisionReport.*;
+import java.util.*;
+
+/**
+ * AstWalk class to simplify iterating in AST
+ */
+public class AstWalk {
+
+    /**
+     * The payload will either be the name of the parser rule, or the token
+     * of a leaf in the tree.
+     */
+    private final Object payload;
+
+    /**
+     * All child nodes of this AstWalk.
+     */
+    private final List&lt;AstWalk&gt; children;
+
+<span class="fc" id="L25">    private List&lt;Token&gt; tokenList = new ArrayList&lt;&gt;();</span>
+
+    public AstWalk(ParseTree tree) {
+<span class="fc" id="L28">        this(null, tree);</span>
+<span class="fc" id="L29">        this.storeTokenList();</span>
+<span class="fc" id="L30">    }</span>
+
+    private AstWalk(AstWalk ast, ParseTree tree) {
+<span class="fc" id="L33">        this(ast, tree, new ArrayList&lt;AstWalk&gt;());</span>
+<span class="fc" id="L34">    }</span>
+
+<span class="fc" id="L36">    private AstWalk(AstWalk parent, ParseTree tree, List&lt;AstWalk&gt; children) {</span>
+
+<span class="fc" id="L38">        this.payload = getPayload(tree);</span>
+<span class="fc" id="L39">        this.children = children;</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (parent == null) {</span>
+            // We're at the root of the AstWalk, traverse down the parse tree to fill
+            // this AstWalk with nodes.
+<span class="fc" id="L44">            walk(tree, this);</span>
+        } else {
+<span class="fc" id="L46">            parent.children.add(this);</span>
+        }
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * getter function for payload
+     * @return payload
+     */
+    public Object getPayload() {
+<span class="fc" id="L55">        return payload;</span>
+    }
+
+    /**
+     * getter function for children
+     * @return children list
+     */
+    public List&lt;AstWalk&gt; getChildren() {
+<span class="fc" id="L63">        return new ArrayList&lt;&gt;(children);</span>
+    }
+
+    /**
+     * Determines the payload of this AstWalk: a string in case it's an inner node (which
+     * is the name of the parser rule), or a Token in case it is a leaf node.
+     * @param tree a parser tree
+     * @return tree's payload
+     */
+    private Object getPayload(ParseTree tree) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (tree.getChildCount() == 0) {</span>
+            // A leaf node: return the tree's payload, which is a Token.
+<span class="fc" id="L75">            return tree.getPayload();</span>
+        } else {
+            // The name for parser rule `foo` will be `FooContext`. Strip `Context` and
+            // lower case the first character.
+<span class="fc" id="L79">            String ruleName = tree.getClass().getSimpleName().replace(&quot;Context&quot;, &quot;&quot;);</span>
+<span class="fc" id="L80">            return Character.toLowerCase(ruleName.charAt(0)) + ruleName.substring(1);</span>
+        }
+    }
+
+
+    /**
+     * Fills this AstWalk based on the parse tree.
+     * @param tree a parser tree
+     * @param ast current ast walk
+     */
+    private static void walk(ParseTree tree, AstWalk ast) {
+
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (tree.getChildCount() == 0) {</span>
+            // We've reached a leaf. We must create a new instance of an AstWalk because
+            // the constructor will make sure this new instance is added to its parent's
+            // child nodes.
+<span class="fc" id="L96">            new AstWalk(ast, tree);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        } else if (tree.getChildCount() == 1) {</span>
+            // We've reached an inner node with a single child: we don't include this in
+            // our AstWalk.
+<span class="fc" id="L100">            walk(tree.getChild(0), ast);</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        } else if (tree.getChildCount() &gt; 1) {</span>
+
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            for (int i = 0; i &lt; tree.getChildCount(); i++) {</span>
+
+<span class="fc" id="L105">                AstWalk temp = new AstWalk(ast, tree.getChild(i));</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">                if (!(temp.payload instanceof Token)) {</span>
+                    // Only traverse down if the payload is not a Token.
+<span class="fc" id="L109">                    walk(tree.getChild(i), temp);</span>
+                }
+            }
+        }
+<span class="fc" id="L113">    }</span>
+
+    
+    /**
+     * storeTokenList parses an AST and stores all the tokens in a 
+     * arraylist for other methods to access them
+     */
+    public void storeTokenList() {
+
+<span class="fc" id="L122">        AstWalk ast = this;</span>
+<span class="fc" id="L123">        List&lt;AstWalk&gt; firstStack = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L124">        firstStack.add(ast);</span>
+
+<span class="fc" id="L126">        List&lt;List&lt;AstWalk&gt;&gt; childListStack = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L127">        childListStack.add(firstStack);</span>
+
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        while (!childListStack.isEmpty()) {</span>
+
+<span class="fc" id="L131">            List&lt;AstWalk&gt; childStack = childListStack.get(childListStack.size() - 1);</span>
+
+<span class="fc bfc" id="L133" title="All 2 branches covered.">            if (childStack.isEmpty()) {</span>
+<span class="fc" id="L134">                childListStack.remove(childListStack.size() - 1);</span>
+            } else {
+<span class="fc" id="L136">                ast = childStack.remove(0);</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">                if (ast.payload instanceof Token) {</span>
+<span class="fc" id="L139">                    Token token = (Token) ast.payload;</span>
+<span class="pc bpc" id="L140" title="1 of 4 branches missed.">                    if(token.getText() != null &amp;&amp; !token.getText().trim().isEmpty())</span>
+                    {
+<span class="fc" id="L142">                    		tokenList.add(token);</span>
+                    }
+                } 
+
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                if(getSubNodeChildren(ast)!=null){</span>
+<span class="fc" id="L147">                	childListStack.add(getSubNodeChildren(ast));</span>
+                }
+            }
+<span class="fc" id="L150">        }</span>
+<span class="fc" id="L151">    }</span>
+    
+    /**
+     * getSubNodeChildren gets the children of a subnodes of an ASTWalk
+     * @return a list of childrens
+     */
+    public List&lt;AstWalk&gt; getSubNodeChildren(AstWalk ast)
+    {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    		if (!ast.children.isEmpty()) {</span>
+<span class="fc" id="L160">            List&lt;AstWalk&gt; children1 = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L161">            children1.addAll(ast.children);</span>
+<span class="fc" id="L162">            return children1;</span>
+    		}
+<span class="fc" id="L164">    		return Collections.emptyList();</span>
+    }
+
+    /**
+     * getAstTokenMap parses an AST and returns a token hashmap
+     * the hashmap key is token type and value is ASTNode
+     * @return a hashmap of list of tokens
+     */
+    public Map&lt;Integer,ArrayList&lt;Token&gt;&gt; getAstTokenMap() {
+
+<span class="fc" id="L174">        HashMap&lt;Integer,ArrayList&lt;Token&gt;&gt; tokMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        for (Token token : tokenList) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        		if (tokMap.containsKey(token.getType())){</span>
+<span class="fc" id="L178">                tokMap.get(token.getType()).add(token);</span>
+            }
+            else{
+<span class="fc" id="L181">                tokMap.put(token.getType(),new ArrayList&lt;Token&gt;());</span>
+<span class="fc" id="L182">                tokMap.get(token.getType()).add(token);</span>
+            }
+<span class="fc" id="L184">		}</span>
+
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">		if(tokMap.containsKey(-1))</span>
+<span class="fc" id="L187">    		tokMap.remove(-1);</span>
+
+<span class="fc" id="L189">        return tokMap;</span>
+    }
+
+<span class="fc" id="L192">    Map&lt;Integer,List&lt;LineMatch&gt;&gt; hashCodeLineMatch = new HashMap&lt;Integer,List&lt;LineMatch&gt;&gt;();</span>
+    /**
+     * getAstHashCodes parses an AST and returns a list of HashCodes for the nodes in AST
+     * @return a list of integers which are hashcodes for AST
+     */
+    public List&lt;Integer&gt; getAstHashCodes() {
+<span class="fc" id="L198">        ArrayList&lt;Integer&gt; hashCodes = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        for (Token token : tokenList) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">            if(token.getType()==36) {</span>
+<span class="fc" id="L202">                hashCodes.add(token.getText().hashCode());</span>
+
+<span class="fc" id="L204">                LineMatch temp = new LineMatch();</span>
+<span class="fc" id="L205">                temp.setLine(token.getLine());</span>
+<span class="fc" id="L206">                temp.setStartIndex(token.getCharPositionInLine());</span>
+<span class="fc" id="L207">                temp.setStopIndex(token.getCharPositionInLine() + token.getText().length());</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">                if (hashCodeLineMatch.containsKey(token.getText().hashCode())) {</span>
+<span class="fc" id="L210">                    hashCodeLineMatch.get(token.getText().hashCode()).add(temp);</span>
+                } else {
+<span class="fc" id="L212">                    hashCodeLineMatch.put(token.getText().hashCode(), new ArrayList&lt;LineMatch&gt;());</span>
+<span class="fc" id="L213">                    hashCodeLineMatch.get(token.getText().hashCode()).add(temp);</span>
+                }
+            }
+<span class="fc" id="L216">        }</span>
+
+<span class="fc" id="L218">        return hashCodes;</span>
+    }
+
+    public Map&lt;Integer,List&lt;LineMatch&gt;&gt; getHashCodeLineMatch() {
+<span class="fc" id="L222">        return hashCodeLineMatch;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserValidator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.plagiarismdetector.validation</a> &gt; <span class="el_source">UserValidator.java</span></div><h1>UserValidator.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.plagiarismdetector.validation;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.User;
+import edu.northeastern.cs5500.team111.plagiarismdetector.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+/**
+ * UserValidator class to handle back end validation
+ */
+@Component
+public class UserValidator implements Validator {
+
+    private UserRepository userRepository;
+
+    private static final String NON_EMPTY = &quot;NotEmpty&quot;;
+
+    @Autowired
+<span class="fc" id="L22">    public UserValidator(UserRepository userRepository) {</span>
+<span class="fc" id="L23">        this.userRepository = userRepository;</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * @param aClass any class
+     * @return boolean based on suppport
+     */
+    @Override
+    public boolean supports(Class&lt;?&gt; aClass) {
+<span class="nc" id="L32">        return User.class.equals(aClass);</span>
+    }
+
+    /**
+     * Validate function validates the User object
+     *
+     * @param o      of type User
+     * @param errors if any
+     */
+    @Override
+    public void validate(Object o, Errors errors) {
+<span class="fc" id="L43">        User user = (User) o;</span>
+
+<span class="fc" id="L45">        ValidationUtils.rejectIfEmptyOrWhitespace(errors, &quot;firstName&quot;, NON_EMPTY);</span>
+<span class="pc bpc" id="L46" title="2 of 4 branches missed.">        if (user.getFirstName().length() &lt; 2 || user.getFirstName().length() &gt; 32) {</span>
+<span class="nc" id="L47">            errors.rejectValue(&quot;firstName&quot;, &quot;Size&quot;);</span>
+        }
+
+<span class="fc" id="L50">        ValidationUtils.rejectIfEmptyOrWhitespace(errors, &quot;lastName&quot;, NON_EMPTY);</span>
+<span class="pc bpc" id="L51" title="2 of 4 branches missed.">        if (user.getLastName().length() &lt; 2 || user.getLastName().length() &gt; 32) {</span>
+<span class="nc" id="L52">            errors.rejectValue(&quot;lastName&quot;, &quot;Size&quot;);</span>
+        }
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (userRepository.findByEmail(user.getEmail()) != null) {</span>
+<span class="fc" id="L56">            errors.rejectValue(&quot;email&quot;, &quot;Duplicate&quot;);</span>
+        }
+
+<span class="fc" id="L59">        ValidationUtils.rejectIfEmptyOrWhitespace(errors, &quot;userType&quot;, NON_EMPTY);</span>
+<span class="pc bpc" id="L60" title="2 of 4 branches missed.">        if (user.getUserType() == null || user.getUserType().toString().equalsIgnoreCase(&quot;&quot;)) {</span>
+<span class="nc" id="L61">            errors.rejectValue(&quot;userType&quot;, &quot;Null&quot;);</span>
+        }
+
+<span class="fc" id="L64">        ValidationUtils.rejectIfEmptyOrWhitespace(errors, &quot;password&quot;, NON_EMPTY);</span>
+<span class="fc" id="L65">        ValidationUtils.rejectIfEmptyOrWhitespace(errors, &quot;email&quot;, NON_EMPTY);</span>
+
+<span class="fc" id="L67">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

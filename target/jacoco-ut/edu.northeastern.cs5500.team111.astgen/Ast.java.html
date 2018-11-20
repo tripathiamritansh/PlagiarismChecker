@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Ast.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.astgen</a> &gt; <span class="el_source">Ast.java</span></div><h1>Ast.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.astgen;
+
+import edu.northeastern.cs5500.team111.comparisonstrategies.LineMatch;
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Token;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Ast class which is used to convert a Pythonfile to a AST using
+ * the ANTLR library
+ */
+
+/**
+ * Class to represent an Abstract syntax tree
+ */
+public class Ast {
+    private PythonFile file;
+    private AstWalk astWalk;
+
+    /**
+     * Constructor for AST class which initializes file and astwalk
+     * @param file the python file whose ast needs to be generated
+     */
+<span class="fc" id="L30">    public Ast(PythonFile file)  {</span>
+<span class="fc" id="L31">        this.file = file;</span>
+<span class="fc" id="L32">        astWalk = new AstWalk(parse());</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * Reads the file and converts it to String with encoding
+     * @param file the input python file
+     * @param encoding default encoding scheme
+     * @return the encoded string value
+     */
+    private String readFile(PythonFile file, Charset encoding) {
+<span class="fc" id="L42">        byte[] encoded = file.getFileContent();</span>
+<span class="fc" id="L43">        return new String(encoded, encoding);</span>
+    }
+
+    /**
+     * Function to generate an AST from a python source code file
+     * @return File_inputContext object
+     */
+    public AltPython3Parser.File_inputContext parse() {
+<span class="fc" id="L51">        String code = readFile(this.file, Charset.forName(&quot;UTF-8&quot;));</span>
+<span class="fc" id="L52">        AltPython3Lexer lexer = new AltPython3Lexer(new ANTLRInputStream(code));</span>
+<span class="fc" id="L53">        CommonTokenStream tokens = new CommonTokenStream(lexer);</span>
+<span class="fc" id="L54">        AltPython3Parser parser = new AltPython3Parser(tokens);</span>
+<span class="fc" id="L55">        return parser.file_input();</span>
+    }
+
+    /**
+     * getTokenMap parses an AST and returns a token hashmap
+     * @return a hashmap of list of tokens
+     */
+    public Map&lt;Integer, ArrayList&lt;Token&gt;&gt; getTokenMap() {
+<span class="fc" id="L63">        return astWalk.getAstTokenMap();</span>
+    }
+
+    /**
+     * getHashcodesList parses an AST and returns a Arraylist of hashcodes of the nodes
+     * @return a list of hashcode integers
+     */
+    public List&lt;Integer&gt; getHashcodesList() {
+<span class="fc" id="L71">        return this.astWalk.getAstHashCodes();</span>
+    }
+
+    public Map&lt;Integer, List&lt;LineMatch&gt;&gt; getHashcodesLineMatch() {
+<span class="fc" id="L75">        return this.astWalk.getHashCodeLineMatch();</span>
+    }
+
+    public AstWalk getAstWalk() {
+<span class="fc" id="L79">        return astWalk;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

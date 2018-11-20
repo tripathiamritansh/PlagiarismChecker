@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>StrategyContext.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.comparisonstrategies</a> &gt; <span class="el_source">StrategyContext.java</span></div><h1>StrategyContext.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.comparisonstrategies;
+
+import edu.northeastern.cs5500.team111.plagiarismdetector.domain.PythonFile;
+
+/**
+ * Context to store the strategy to be used
+ */
+public class StrategyContext {
+
+    private FileComparer fileComparer;
+
+    /**
+     * @param strategy Type of strategy to be used
+     */
+<span class="fc" id="L15">    public StrategyContext(ComparisonAlgorithm strategy) {</span>
+
+<span class="pc bpc" id="L17" title="1 of 7 branches missed.">        switch (strategy) {</span>
+            case LCS:
+<span class="fc" id="L19">                this.fileComparer = new LCSComparer();</span>
+<span class="fc" id="L20">                break;</span>
+            case JACCARD:
+<span class="fc" id="L22">                this.fileComparer = new JaccardComparer();</span>
+<span class="fc" id="L23">                break;</span>
+            case EDITDISTANCE:
+<span class="fc" id="L25">                this.fileComparer = new TokenEditDistComparer();</span>
+<span class="fc" id="L26">                break;</span>
+            case LCS_WITH_AST:
+<span class="fc" id="L28">                this.fileComparer = new LCSComparerAdvanced();</span>
+<span class="fc" id="L29">                break;</span>
+            case WEIGHTED_DISTRIBUTION:
+<span class="fc" id="L31">                this.fileComparer = new WeightedDistribution();</span>
+<span class="fc" id="L32">                break;</span>
+            case MACHINE_LEARNING:
+<span class="fc" id="L34">                this.fileComparer = new MachineLearningModel();</span>
+                break;
+        }
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Method to compare and get a line by line report
+     *
+     * @param file1 first file to be compared of type pythonFile
+     * @param file2 second file to be compared of type pythonFile
+     * @return a Comparision report with detailed results
+     */
+    public ComparisionReport getComparisonReport(PythonFile file1, PythonFile file2) {
+<span class="fc" id="L47">        return fileComparer.compareTwoFilesAdvanced(file1, file2);</span>
+    }
+
+    /**
+     * Getter for Filecomparer variable
+     * @return Filecomparer initialised for this object
+     */
+    public FileComparer getFileComparer() {
+<span class="fc" id="L55">        return fileComparer;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RootFolder.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">plagiarismdetector</a> &gt; <a href="index.source.html" class="el_package">edu.northeastern.cs5500.team111.plagiarismdetector.domain</a> &gt; <span class="el_source">RootFolder.java</span></div><h1>RootFolder.java</h1><pre class="source lang-java linenums">package edu.northeastern.cs5500.team111.plagiarismdetector.domain;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
+
+/**
+ * Root folder entity for ORM, which works as a base structure for all files
+ */
+@Entity
+public class RootFolder implements Serializable {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @ElementCollection
+    private List&lt;Long&gt; studentFolderIds;
+    private String rootFolderName;
+    private Long userId;
+
+    /**
+     * @param studentFolderIds List of sub folders ids in this root folder
+     * @param rootFolderName name of the root folder
+     * @param userId user id of the root folder
+     */
+<span class="fc" id="L27">    public RootFolder( List&lt;Long&gt; studentFolderIds, String rootFolderName, Long userId) {</span>
+<span class="fc" id="L28">        this.studentFolderIds = studentFolderIds;</span>
+<span class="fc" id="L29">        this.rootFolderName = rootFolderName;</span>
+<span class="fc" id="L30">        this.userId = userId;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * default contructor for root folder
+     */
+<span class="fc" id="L36">    public RootFolder() {</span>
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * @param rootFolderName name of the root folder
+     * @param userId user id of the root folder
+     */
+<span class="fc" id="L43">    public RootFolder(String rootFolderName, Long userId) {</span>
+<span class="fc" id="L44">        this.rootFolderName = rootFolderName;</span>
+<span class="fc" id="L45">        this.userId = userId;</span>
+<span class="fc" id="L46">    }</span>
+
+    /**
+     * Getters and Setters
+     */
+    public Long getId() {
+<span class="fc" id="L52">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L56">        this.id = id;</span>
+<span class="fc" id="L57">    }</span>
+
+    public List&lt;Long&gt; getStudentFolderIds() {
+<span class="fc" id="L60">        return studentFolderIds;</span>
+    }
+
+
+    public String getRootFolderName() {
+<span class="fc" id="L65">        return rootFolderName;</span>
+    }
+
+    public void setRootFolderName(String rootFolderName) {
+<span class="fc" id="L69">        this.rootFolderName = rootFolderName;</span>
+<span class="fc" id="L70">    }</span>
+
+    public Long getUserId() {
+<span class="fc" id="L73">        return userId;</span>
+    }
+
+    public void setUserId(Long userId) {
+<span class="fc" id="L77">        this.userId = userId;</span>
+<span class="fc" id="L78">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

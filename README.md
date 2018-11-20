@@ -12,3 +12,35 @@ Five different algorithms have been implemented
 * Machine learning model
 
 Throughout the development process, each module was thoroughly unit tested and the code was extensively commented for readability.
+
+### Function and Features:
+
+Ability to create a new user as an admin or an instructor
+* Created user can login using the email id and password provided during registration
+* User can upload multiple student submissions.
+* System can detect plagiarism in multiple Python projects
+* Edge cases like empty folder and non python files are handled
+* Multiple comparison algorithms can be used to detect plagiarism
+* Similarity score is provided for all the compared files
+* The systems uses weights generated using a machine learning model based on gradient descent and the MOSS as 
+evaluation model.
+* User can analyze the detected python files with side by side line comparison indicating where the
+system detected plagiarism.
+* The System can show number of time each algorithm has run.
+* The admin has the privilege to delete user
+* The user interface is descriptive and user centric
+
+
+### Tools and Technologies used:
+
+Programming language: Java
+* Backend Framework: Spring Boot and JPA
+* Frontend Frameworks: AngularJS, Bootstrap and HTML
+* Testing Framework: Junit4
+* Libraries: ANTLR, JCOCO, Javax.mail, Jsoup
+* Database: H2
+* Process management: Jira
+* Version Control: Github
+* Continuous Integration : Jenkins
+* Quality Gate: SonarQube
+
